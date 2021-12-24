@@ -22,7 +22,7 @@ public class Menu {
         Menu.masterKey = masterKey;
     }
 
-    public void displayWelcome() {
+    public void greeting() {
         String message = "##################################################\n" +
                          "\tAES Encryption/Decryption program\n" +
                          "\t\tby Kevin Silvester\n" +
@@ -30,7 +30,7 @@ public class Menu {
         System.out.println(message);
     }
 
-    public void displayMainMenu() {
+    public void mainMenu() {
         final String MENU = "\n\n*** MAIN MENU OPTIONS ***\n" +
                             "  1. Encrypt a file\n" +
                             "  2. Decrypt a file\n" +
@@ -52,7 +52,7 @@ public class Menu {
 
                 switch (option) {
                     case ENCRYPT:
-                        displayEncryptionMenu();
+                        encryptionMenu();
                         break;
                     case DECRYPT:
                         System.out.println("");
@@ -71,7 +71,7 @@ public class Menu {
         } while (option != EXIT);
     }
 
-    public void displayEncryptionMenu() {
+    public void encryptionMenu() {
         System.out.print("\nEnter the file name: ");
         String fileName = KB.next();
 

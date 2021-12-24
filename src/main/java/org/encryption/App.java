@@ -13,7 +13,7 @@ public class App {
     }
 
     private void init() {
-        menu.displayWelcome();
-        menu.displayMainMenu();
+        menu.greeting();
+        menu.mainMenu();
     }
 }

@@ -20,9 +20,13 @@ public class MasterKey {
     private static final char[] KEYSTORE_PASSWORD = "not-a-password".toCharArray();
     private static final int    KEY_SIZE      = 256;
 
+
+    private void error(Exception e) {
+        System.out.println(e.getMessage());
+    }
+
     // https://howtodoinjava.com/java/java-security/aes-256-encryption-decryption/#:~:text=AES%20is%20block%20cipher%20capable,and%20256%2Dbits%2C%20respectively.
     // https://stackoverflow.com/questions/18228579/how-to-create-a-secure-random-aes-key-in-java/18229498#18229498
-
     public String generateMasterKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance(KEY_SPEC_TYPE);
@@ -32,7 +36,7 @@ public class MasterKey {
             return Base64.getEncoder().encodeToString(key.getEncoded());
         }
         catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            error(e);
         }
         return null;
     }
@@ -43,9 +47,7 @@ public class MasterKey {
             writer = new PrintWriter(new FileWriter(ENCRYPT_OUT), false);
             writer.println(base64key);
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        catch (IOException e) { error(e); }
         finally {
             assert writer != null;
             writer.close();
@@ -68,12 +70,9 @@ public class MasterKey {
             } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
                 System.out.println(e.getMessage());
             } finally {
-                if (fos != null) {
-                    try { fos.close(); }
-                    catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
+                assert fos != null;
+                try { fos.close(); }
+                catch (IOException e) { error(e); }
             }
 
             KeyStore.ProtectionParameter protectionParam = new KeyStore.PasswordProtection(KEYSTORE_PASSWORD);
@@ -83,7 +82,7 @@ public class MasterKey {
             store.deleteEntry(KEYSTORE_ENTRY_ALIAS);
             store.setEntry(KEYSTORE_ENTRY_ALIAS, keyEntry, protectionParam);
         }
-        catch (KeyStoreException e) { e.printStackTrace(); }
+        catch (KeyStoreException e) { error(e); }
     }
 
     public void saveMasterKey(String base64key, SaveOptions option) {

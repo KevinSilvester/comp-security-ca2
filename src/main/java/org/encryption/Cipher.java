@@ -19,7 +19,9 @@ public class Cipher {
     private static final String CYPHER_TYPE = "AES/CBC/PKCS5Padding";
     private static final String CIPHERTEXT_OUT = "ciphertext.txt";
 
-    public Cipher() {}
+    private void error(Exception e) {
+        System.out.println(e.getMessage());
+    }
 
     public boolean checkIfFileExists(String fileName) {
         return new File(fileName).exists();
@@ -28,7 +30,7 @@ public class Cipher {
     public String loadPlaintext(String fileName) {
         // https://stackoverflow.com/questions/14169661/read-complete-file-without-using-loop-in-java
         try { return new String(Files.readAllBytes(Paths.get(fileName))); }
-        catch (IOException e ) { e.printStackTrace(); }
+        catch (IOException e ) { error(e); }
         return null;
     }
 
@@ -49,8 +51,10 @@ public class Cipher {
             writer.println(ciphertext);
             return ciphertext;
         }
-        catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidParameterSpecException | IOException e) {
-            e.printStackTrace();
+        catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | IllegalBlockSizeException | BadPaddingException
+                | InvalidParameterSpecException | IOException e) {
+            error(e);
         }
         finally {
             assert writer != null;
