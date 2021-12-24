@@ -31,7 +31,7 @@ public class Menu {
     }
 
     public void displayMainMenu() {
-        final String MENU = "\n*** MAIN MENU OPTIONS ***\n" +
+        final String MENU = "\n\n*** MAIN MENU OPTIONS ***\n" +
                             "  1. Encrypt a file\n" +
                             "  2. Decrypt a file\n" +
                             "  3. Exit program";
@@ -43,10 +43,9 @@ public class Menu {
         int option = 0;
         String input = null;
 
-        System.out.println(MENU);
-
         do {
             try {
+                System.out.println(MENU);
                 System.out.print("\nEnter Option[1 - 3]: ");
                 input = KB.next();
                 option = Integer.parseInt(input);
@@ -81,9 +80,63 @@ public class Menu {
         else {
             String secretKey = masterKey.generateMasterKey();
             String plaintext = cipher.loadPlaintext(fileName);
+            String ciphertext = cipher.encryptPlaintext(plaintext, secretKey);
 
-            String encryptedPlaintext = cipher.encryptPlaintext(plaintext, secretKey);
-            System.out.println(encryptedPlaintext);
+            System.out.println("\nEncryption Key: ");
+            System.out.println(secretKey);
+
+            System.out.println("\nOriginal Plaintext: ");
+            System.out.println(plaintext);
+
+            System.out.println("\nCiphertext: ");
+            System.out.println(ciphertext);
+
+            keySaveMenu(secretKey);
         }
+    }
+
+    public void keySaveMenu(String base64key) {
+        final String MENU = "\n\n*** KEY SAVING OPTION ***\n" +
+                "  1. Write encryption key to file keystore.txt\n" +
+                "  2. Write key in Java KeyStore\n" +
+                "  3. Write to both";
+
+        final int FILE = 1,
+                KEY_STORE = 2,
+                BOTH = 3;
+
+        int option = 0;
+        String input = null;
+
+
+        do {
+            try {
+                System.out.println(MENU);
+                System.out.print("\nEnter Option[1 - 3]: ");
+                input = KB.next();
+                option = Integer.parseInt(input);
+
+                switch (option) {
+                    case FILE:
+                        masterKey.saveMasterKey(base64key, SaveOptions.FILE);
+                        System.out.println("\n<<Key saved to text file>>");
+                        break;
+                    case KEY_STORE:
+                        masterKey.saveMasterKey(base64key, SaveOptions.KEY_STORE);
+                        System.out.println("\n<<Key saved to key store>>");
+                        break;
+                    case BOTH:
+                        masterKey.saveMasterKey(base64key, SaveOptions.BOTH);
+                        System.out.println("\n<<Key saved to text file and key store>>");
+                        break;
+                    default:
+                        System.out.print("\nInvalid option - please enter number in range\n");
+                        break;
+                }
+            }
+            catch (InputMismatchException | NumberFormatException e) {
+                System.out.print("\nInvalid option - please enter number in range\n");
+            }
+        } while (option != FILE && option != KEY_STORE && option != BOTH);
     }
 }

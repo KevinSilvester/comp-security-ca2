@@ -13,10 +13,10 @@ import java.util.Base64;
 public class MasterKey {
     private static final String KEY_SPEC_TYPE = "AES";
     private static final String KEYSTORE_TYPE = "JCEKS";
-    private static final String ENCRYPT_OUT   = "ciphertext.txt";
+    private static final String ENCRYPT_OUT   = "keystore.txt";
     private static final String DECRYPT_OUT   = "plaintext.txt";
     private static final String KEYSTORE_ENTRY_ALIAS = "masterKey";
-    private static final String KEYSTORE_PATH = "keystore";
+    private static final String KEYSTORE_PATH = "keystore.jks";
     private static final char[] KEYSTORE_PASSWORD = "not-a-password".toCharArray();
     private static final int    KEY_SIZE      = 256;
 
@@ -32,19 +32,14 @@ public class MasterKey {
             return Base64.getEncoder().encodeToString(key.getEncoded());
         }
         catch (NoSuchAlgorithmException e) {
-//            throw new PasswordException(ERROR_BAD_ALGORITHM);
             e.printStackTrace();
         }
         return null;
     }
 
     private void saveToFile(String base64key) {
-        File file = null;
-        FileWriter fileWriter = null;
         PrintWriter writer = null;
         try {
-//            file = new File(ENCRYPT_OUT);
-//            fileWriter = new FileWriter(file);
             writer = new PrintWriter(new FileWriter(ENCRYPT_OUT), false);
             writer.println(base64key);
         }
@@ -64,23 +59,28 @@ public class MasterKey {
         // https://stackoverflow.com/questions/21406884/storing-aes-secret-key-using-keystore-in-java
         try {
             KeyStore store = KeyStore.getInstance(KEYSTORE_TYPE);
-            FileInputStream fis = null;
+            FileOutputStream fos = null;
 
             try {
-                fis = new FileInputStream(KEYSTORE_PATH);
-                store.load(fis, KEYSTORE_PASSWORD);
+                fos = new FileOutputStream(KEYSTORE_PATH);
+                store.load(null, KEYSTORE_PASSWORD);
+                store.store(fos, KEYSTORE_PASSWORD);
             } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             } finally {
-                assert fis != null;
-                try { fis.close(); }
-                catch (IOException e) { e.printStackTrace(); }
+                if (fos != null) {
+                    try { fos.close(); }
+                    catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
             }
 
             KeyStore.ProtectionParameter protectionParam = new KeyStore.PasswordProtection(KEYSTORE_PASSWORD);
             byte[] decodedKeyBytes = Base64.getDecoder().decode(base64Key);
             SecretKey key = new SecretKeySpec(decodedKeyBytes, KEY_SPEC_TYPE);
             KeyStore.SecretKeyEntry keyEntry = new KeyStore.SecretKeyEntry(key);
+            store.deleteEntry(KEYSTORE_ENTRY_ALIAS);
             store.setEntry(KEYSTORE_ENTRY_ALIAS, keyEntry, protectionParam);
         }
         catch (KeyStoreException e) { e.printStackTrace(); }
