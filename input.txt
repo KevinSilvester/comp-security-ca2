@@ -1,0 +1,3 @@
+This is the initial plaintext message for this project.
+The encrypted message will be stored in the file
+    output.txt.
