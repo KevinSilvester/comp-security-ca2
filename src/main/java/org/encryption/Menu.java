@@ -174,11 +174,11 @@ public class Menu {
                         break;
                     case KEY_STORE:
                         AESKey.saveMasterKey(base64key, SaveOptions.KEY_STORE);
-                        System.out.println("\n<< Key saved to keystore.jks >>");
+                        System.out.println("\n<< Key saved to keystore.jceks >>");
                         break;
                     case BOTH:
                         AESKey.saveMasterKey(base64key, SaveOptions.BOTH);
-                        System.out.println("\n<< Key saved to keystore.txt and keystore.jks >>");
+                        System.out.println("\n<< Key saved to keystore.txt and keystore.jceks >>");
                         break;
                     default:
                         System.out.print("\nInvalid option - please enter number in range\n");
@@ -231,7 +231,7 @@ public class Menu {
         final String MENU = "\n\n*** DECRYPTION KEY MENU ***\n" +
                             "  1. Enter the decryption key manually\n" +
                             "  2. Load the decryption key a text file\n" +
-                            "  3. Load the decryption key from java key store (.jks file)";
+                            "  3. Load the decryption key from java key store (.jceks file)";
 
         final int MANUAL    = 1,
                   FILE      = 2,
@@ -278,7 +278,8 @@ public class Menu {
 
     /**
      * Will prompt the user to enter the file name where the decryption key is stored.
-     * @return
+     * @return The encoded secret key in the file
+     *         If not possible return null
      */
     private String loadKeyFromFile() {
         String fileName = null;
@@ -323,7 +324,7 @@ public class Menu {
                     case MANUAL:
                         String fileName = null;
                         do {
-                            System.out.print("\nEnter the keystore file name (hint: keystore.jks): ");
+                            System.out.print("\nEnter the keystore file name (hint: keystore.jceks): ");
                             fileName = KB.next();
                         } while (!isValidFile(FileTypes.JCEKS, fileName));
 

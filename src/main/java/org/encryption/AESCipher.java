@@ -50,11 +50,14 @@ public class AESCipher {
 
     /**
      * Reads all line from a text and returns it as string
+     *
+     * @see <a href="https://stackoverflow.com/questions/14169661/read-complete-file-without-using-loop-in-java">
+     *          Read all lines reference
+     *      </a>
      * @param fileName Name of the text file
      * @return The content of the file
      */
     public String loadTextFile(String fileName) {
-        // https://stackoverflow.com/questions/14169661/read-complete-file-without-using-loop-in-java
         try { return new String(Files.readAllBytes(Paths.get(fileName))); }
         catch (IOException e ) { return null; }
     }
@@ -64,10 +67,11 @@ public class AESCipher {
      *
      * Note the returned string bundles the initialization
      * vector and ciphertext, separated by a | character
-     * 
+     *
      * @param plaintext The plaintext to be encrypted
      * @param base64Key The key that is to be used to encrypt the plaintext
-     * @return The encrypted plaintext with initialization vector.
+     * @return The encrypted plaintext with initialization vector
+     *         If not possible return null
      */
     public String encrypt(String plaintext, String base64Key) {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
@@ -95,21 +99,35 @@ public class AESCipher {
         }
     }
 
+    /**
+     * Decrypts the ciphertext using base64Key.
+     * The key is validated for key size and will attempt to decrypt using AES256-CBC (configurable in CIPHER_TYPE).
+     *
+     * @param ciphertext The encrypted plaintext with initialization vector
+     * @param base64Key The key that is to be used to decrypt the plaintext
+     * @return The decrypted ciphertext
+     *         If not possible return null
+     */
     public String decrypt(String ciphertext, String base64Key) {
         try {
+            // Separate the IV from the ciphertext and decode to byte array separately
             String[] ciphertextParts = ciphertext.split("\\|");
             byte[] decodedKeyBytes   = Base64.getDecoder().decode(base64Key);
             byte[] ivBytes           = Base64.getDecoder().decode(ciphertextParts[0]);
             byte[] ciphertextBytes   = Base64.getDecoder().decode(ciphertextParts[1]);
 
+            // Check if key is of valid size
             if (!AESCipher.isValidKeySize(decodedKeyBytes)) return null;
 
+            // Parse the decoded key byes to secret key and use the Cipher instance
+            // decrypt the ciphertext with the secret key and ivBytes
             SecretKey secret    = new SecretKeySpec(decodedKeyBytes, KEY_SPEC_TYPE);
             Cipher cipher       = Cipher.getInstance(CIPHER_TYPE);
             cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(ivBytes));
             String plaintext    = new String(cipher.doFinal(ciphertextBytes));
             PrintWriter writer  = new PrintWriter(new FileWriter(PLAINTEXT_OUT), false);
 
+            // Print the decrypted plaintext to plaintext.txt
             writer.print(plaintext);
             writer.close();
 

@@ -21,7 +21,7 @@ The decrypted data will be written to _plaintext.txt_.
 ### Compile
 ```shell
 # To compile the source code into bin directory
-javac -d bin -cp src src/main/java/org/encrytion/*.java
+javac -d bin -cp src src/main/java/org/encryption/*.java
 ```
 
 ### Execution
