@@ -13,7 +13,7 @@ The decrypted data will be written to _plaintext.txt_.
 
 *************************************************************
 
-#### Pleaes only run the program on the terminal and not in an ide
+#### Only run the program on the terminal as the Console instance is only suitable for terminal interface
 
 *************************************************************
 
