@@ -16,6 +16,7 @@ import java.security.spec.InvalidParameterSpecException;
 import java.util.Base64;
 
 public class AESCipher {
+    // Configuration values
     private static final String KEY_SPEC_TYPE   = "AES";
     private static final String CIPHER_TYPE     = "AES/CBC/PKCS5Padding";
     private static final String CIPHERTEXT_OUT  = "ciphertext.txt";
@@ -25,6 +26,11 @@ public class AESCipher {
     public static final int KEY_BITS_MEDIUM = 192;
     public static final int KEY_BITS_LARGE  = 256;
 
+    /**
+     * Checks if the key is of a valid size for the AES process
+     * @param key The secret key
+     * @return True if the key is of a valid size
+     */
     public static boolean isValidKeySize(byte[] key) {
         int keyLengthBits = key.length * BITS_PER_BYTE;
 
@@ -33,16 +39,36 @@ public class AESCipher {
                 || keyLengthBits == KEY_BITS_LARGE;
     }
 
+    /**
+     * Checks if a file exists
+     * @param fileName The file to check for
+     * @return True if the file does exist, else false
+     */
     public boolean fileExists(String fileName) {
         return new File(fileName).exists();
     }
 
+    /**
+     * Reads all line from a text and returns it as string
+     * @param fileName Name of the text file
+     * @return The content of the file
+     */
     public String loadTextFile(String fileName) {
         // https://stackoverflow.com/questions/14169661/read-complete-file-without-using-loop-in-java
         try { return new String(Files.readAllBytes(Paths.get(fileName))); }
         catch (IOException e ) { return null; }
     }
 
+    /**
+     * Encrypts the plaintext with key provided using AES256-CBC (configurable in CIPHER_TYPE).
+     *
+     * Note the returned string bundles the initialization
+     * vector and ciphertext, separated by a | character
+     * 
+     * @param plaintext The plaintext to be encrypted
+     * @param base64Key The key that is to be used to encrypt the plaintext
+     * @return The encrypted plaintext with initialization vector.
+     */
     public String encrypt(String plaintext, String base64Key) {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
         SecretKey key = new SecretKeySpec(decodedKey, KEY_SPEC_TYPE);

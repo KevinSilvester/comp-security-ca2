@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>Project-2-AES-Encryption</name>
+    <url>https://github.com/KevinSilvester/comp-security-ca2</url>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
