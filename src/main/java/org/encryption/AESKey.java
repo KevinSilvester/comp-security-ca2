@@ -6,18 +6,16 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
-import java.sql.SQLOutput;
 import java.util.Base64;
 
 public class AESKey {
-    private static final String KEY_SPEC_TYPE = "AES";
-    private static final String KEYSTORE_TYPE = "JCEKS";
-    private static final String ENCRYPT_OUT   = "keystore.txt";
-    private static final String DECRYPT_OUT   = "plaintext.txt";
-    private static final String KEYSTORE_ENTRY_ALIAS = "secret-key";
-    private static final String KEYSTORE_PATH = "keystore.jks";
+    private static final String KEY_SPEC_TYPE   = "AES";
+    private static final String KEYSTORE_TYPE   = "JCEKS";
+    private static final String KEYSTORE_ALIAS  = "secret-key";
+    private static final String KEYSTORE_PATH   = "keystore.jks";
     private static final char[] KEYSTORE_PASSWORD = "password".toCharArray();
-    private static final int    KEY_SIZE      = 256;
+    private static final String ENCRYPT_OUT     = "keystore.txt";
+    private static final int    KEY_SIZE        = 256;
 
 
     private void error(Exception e) {
@@ -62,7 +60,7 @@ public class AESKey {
             SecretKey key = new SecretKeySpec(decodedKeyBytes, KEY_SPEC_TYPE);
             KeyStore.SecretKeyEntry keyEntry = new KeyStore.SecretKeyEntry(key);
             KeyStore.ProtectionParameter protectionParam = new KeyStore.PasswordProtection(KEYSTORE_PASSWORD);
-            ks.setEntry(KEYSTORE_ENTRY_ALIAS, keyEntry, protectionParam);
+            ks.setEntry(KEYSTORE_ALIAS, keyEntry, protectionParam);
             ks.store(fos, KEYSTORE_PASSWORD);
             fos.close();
         } catch (IOException | CertificateException | KeyStoreException| NoSuchAlgorithmException e) {
@@ -79,8 +77,8 @@ public class AESKey {
                     fis = new FileInputStream(KEYSTORE_PATH);
                     ks  = KeyStore.getInstance(KEYSTORE_TYPE);
                     ks.load(fis, KEYSTORE_PASSWORD);
-                    if (ks.containsAlias(KEYSTORE_ENTRY_ALIAS)) {
-                        SecretKey key = (SecretKey) ks.getKey(KEYSTORE_ENTRY_ALIAS, KEYSTORE_PASSWORD);
+                    if (ks.containsAlias(KEYSTORE_ALIAS)) {
+                        SecretKey key = (SecretKey) ks.getKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
                         fis.close();
                         return Base64.getEncoder().encodeToString(key.getEncoded());
                     }

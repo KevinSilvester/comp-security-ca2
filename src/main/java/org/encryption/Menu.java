@@ -93,15 +93,24 @@ public class Menu {
         if (!AESCipher.fileExists(fileName))
             System.out.println("\nError!\nFile Not Found.\n");
         else {
-            String secretKey  = AESKey.generateMasterKey();
-            String plaintext  = AESCipher.loadTextFile(fileName);
-            String ciphertext = AESCipher.encrypt(plaintext, secretKey);
+            try {
+                String secretKey = AESKey.generateMasterKey();
+                String plaintext = AESCipher.loadTextFile(fileName);
+                String ciphertext = AESCipher.encrypt(plaintext, secretKey);
 
-            System.out.println("\nEncryption Key:\n"     + secretKey);
-            System.out.println("\nOriginal Plaintext:\n" + plaintext);
-            System.out.println("\nCiphertext:\n"        + ciphertext);
+                if (secretKey == null || plaintext == null || ciphertext == null)
+                    throw new IllegalArgumentException();
 
-            saveKeyMenu(secretKey);
+                System.out.println("\nEncryption Key:\n" + secretKey);
+                System.out.println("\nOriginal Plaintext:\n" + plaintext);
+                System.out.println("\nCiphertext:\n" + ciphertext);
+                System.out.println("\n\n<< Ciphertext saved to ciphertext.txt >>");
+
+                saveKeyMenu(secretKey);
+            }
+            catch (IllegalArgumentException e) {
+                System.out.println("\nError!\nEncryption not possible!!\nPlease try again!\n");
+            }
         }
     }
 
@@ -128,15 +137,15 @@ public class Menu {
                 switch (option) {
                     case FILE:
                         AESKey.saveMasterKey(base64key, SaveOptions.FILE);
-                        System.out.println("\n<<Key saved to text file>>");
+                        System.out.println("\n<< Key saved to keystore.txt >>");
                         break;
                     case KEY_STORE:
                         AESKey.saveMasterKey(base64key, SaveOptions.KEY_STORE);
-                        System.out.println("\n<<Key saved to key store>>");
+                        System.out.println("\n<< Key saved to keystore.jks >>");
                         break;
                     case BOTH:
                         AESKey.saveMasterKey(base64key, SaveOptions.BOTH);
-                        System.out.println("\n<<Key saved to text file and key store>>");
+                        System.out.println("\n<< Key saved to keystore.txt and keystore.jks >>");
                         break;
                     default:
                         System.out.print("\nInvalid option - please enter number in range\n");
@@ -168,6 +177,7 @@ public class Menu {
                 String plaintext = AESCipher.decrypt(ciphertext, decryptionKey);
                 if (plaintext == null) throw new IllegalArgumentException();
                 System.out.println("\nDecrypted ciphertext:\n" + plaintext);
+                System.out.println("\n\n<< Decrypted ciphertext saved to plaintext.txt >>");
             } catch (IllegalArgumentException e) {
                 System.out.println("\nError!\nDecryption not possible!!\nPlease try again!\n");
             }
