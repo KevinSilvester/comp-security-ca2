@@ -3,17 +3,13 @@ package org.encryption;
 public class App {
     private static Menu menu;
 
-    public static void main(String[] args) {
-        App app = new App();
-        MasterKey masterKey = new MasterKey();
-        Cipher cipher = new Cipher();
-        menu = new Menu(cipher, masterKey);
-
-        app.init();
-    }
-
     private void init() {
         menu.greeting();
         menu.mainMenu();
+    }
+
+    public static void main(String[] args) {
+        menu = new Menu(new AESCipher(), new AESKey());
+        new App().init();
     }
 }
